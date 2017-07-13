@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const bcrypt = require('bcryptjs');
 
 const {DATABASE_URL, PORT} = require('./config');
 const {BlogPost, User} = require('./models');
@@ -62,31 +63,34 @@ app.post('/posts', (req, res) => {
 
 });
 
-// {
-//     "username": "alice_user",
-//     "password": "topsecret",
-//     "firstName": "Alice",
-//     "lastName": "Bobson"
-// }
-
 app.post('/users', (req, res) => {
-  res.json
-  if (!user) {
-
-  } else if (req.body.username in )
-  return res.status(400);
-  User.find({username: req.body.username}).count()
+  let incomingReqObj = req.body;
+  return User
+    .find({username: req.body.username})
+    .count()   // count is always 1
     .then(count => {
       if (count > 0) {
-        console.error("There's already a user with that username");
+        console.error('There\'s already a user with that username');
+        return res.status(400);
       }
-      User
-        .create(req.body)
-        })
+      return User.hashPassword(req.body.password);   // where does this stuff save?
     })
-    .then 
-    });
-})
+    .then(password => {
+      return User 
+        .create({
+          username: req.body.username,
+          password: password,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName
+        });
+    })
+    .then(user => {
+      return res.status(201).send(user.apiRepr());
+    })
+    .catch(err => {
+      res.status(500).json({message: "Error!"});
+    })
+});
 
 app.delete('/posts/:id', (req, res) => {
   BlogPost
