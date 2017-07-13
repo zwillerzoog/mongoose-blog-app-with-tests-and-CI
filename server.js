@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 
 const {DATABASE_URL, PORT} = require('./config');
-const {BlogPost} = require('./models');
+const {BlogPost, User} = require('./models');
 
 const app = express();
 
@@ -62,6 +62,31 @@ app.post('/posts', (req, res) => {
 
 });
 
+// {
+//     "username": "alice_user",
+//     "password": "topsecret",
+//     "firstName": "Alice",
+//     "lastName": "Bobson"
+// }
+
+app.post('/users', (req, res) => {
+  res.json
+  if (!user) {
+
+  } else if (req.body.username in )
+  return res.status(400);
+  User.find({username: req.body.username}).count()
+    .then(count => {
+      if (count > 0) {
+        console.error("There's already a user with that username");
+      }
+      User
+        .create(req.body)
+        })
+    })
+    .then 
+    });
+})
 
 app.delete('/posts/:id', (req, res) => {
   BlogPost
