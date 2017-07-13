@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 const {DATABASE_URL, PORT} = require('./config');
 const {BlogPost, User} = require('./models');
@@ -13,6 +14,30 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 
 mongoose.Promise = global.Promise;
+
+
+passport('basic', {session: false})
+
+passport.use(passport());
+
+const basicStrategy = new BasicStrategy(function(username, password, done) {
+
+  User
+    .find({username})
+    .then(function() {
+
+    })
+
+});
+
+function authenticator() {
+  passport.authenticate(password, this.password);
+}
+
+
+// ---------
+// endpoints
+// ---------
 
 app.get('/posts', (req, res) => {
   BlogPost
@@ -64,7 +89,6 @@ app.post('/posts', (req, res) => {
 });
 
 app.post('/users', (req, res) => {
-  let incomingReqObj = req.body;
   return User
     .find({username: req.body.username})
     .count()   // count is always 1
