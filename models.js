@@ -52,8 +52,7 @@ UserSchema.methods.apiRepr = function() {
   };
 };
 
-const BlogPost = mongoose.model('BlogPost', blogPostSchema);
-module.exports = {BlogPost};
+const BlogPost = mongoose.model('Blogpost', blogPostSchema);
 
 const User = mongoose.model('User', UserSchema);
-module.exports = {User};
+module.exports = {User, BlogPost};
