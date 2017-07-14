@@ -12,6 +12,14 @@ const {TEST_DATABASE_URL} = require('../config');
 
 chai.use(chaiHttp);
 
+const USER = {
+  username: faker.internet.userName(),
+  unhashedPassword: 'test',
+  password: '$2a$10$mjFeHXylKADWX8/HCsOQAu418D.VDL6.tjpgGUH82BrS8XMOecVuW',
+  firstName: faker.name.firstName(),
+  lastName: faker.name.lastName()
+};
+
 function tearDownDb() {
   return new Promise((resolve, reject) => {
     console.warn('Deleting database');
@@ -39,28 +47,11 @@ function seedBlogPostData() {
 }
 
 function seedUserData() {
-  console.info('=======' + 'seeding database with users' + '==========')
-  const testUsers = [
-    {
-      username: 'bball4life',
-      password: '$2a$10$1.uw4ZBrs/lh0jF3jTyqqOaefZnMoKZikZJTQMi1Q4NwV5z86gXoC',
-      firstName: 'michael',
-      lastName: 'jordan'
-    },
-    {
-      username: 'lizard',
-      password: '$2a$10$1.uw4ZBrs/lh0jF3jTyqqOaefZnMoKZikZJTQMi1Q4NwV5z86gXoC',
-      firstName: 'dr.',
-      lastName: 'mcTodd'
-    }
-  ];
-
-  return User.insertMany(testUsers);
+  return User.create(USER);
 }
 
 
 describe('blog posts API resource', function() {
-
   before(function() {
     return runServer(TEST_DATABASE_URL);
   });
@@ -101,7 +92,6 @@ describe('blog posts API resource', function() {
       return chai.request(app)
         .get('/posts')
         .then(function(res) {
-
           res.should.have.status(200);
           res.should.be.json;
           res.body.should.be.a('array');
@@ -127,17 +117,17 @@ describe('blog posts API resource', function() {
 
       const newPost = {
           title: faker.lorem.sentence(),
+          content: faker.lorem.text(),
           author: {
-            firstName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
-          },
-          content: faker.lorem.text()
+            firstName: USER.firstName,
+            lastName: USER.lastName
+          }
       };
 
       return chai.request(app)
         .post('/posts')
         .send(newPost)
-        .auth('bball4life', 'poop')
+        .auth(USER.username, USER.unhashedPassword)
         .then(function(res) {
           res.should.have.status(201);
           res.should.be.json;
@@ -166,19 +156,20 @@ describe('blog posts API resource', function() {
         title: 'cats cats cats',
         content: 'dogs dogs dogs',
         author: {
-          firstName: 'foo',
-          lastName: 'bar'
+          firstName: USER.firstName,
+          lastName: USER.lastName
         }
       };
 
       return BlogPost
         .findOne()
-        .exec()
         .then(post => {
+          console.log('======42342342' + post);
           updateData.id = post.id;
 
           return chai.request(app)
             .put(`/posts/${post.id}`)
+            .auth(USER.username, USER.unhashedPassword)
             .send(updateData);
         })
         .then(res => {
