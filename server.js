@@ -16,23 +16,23 @@ app.use(bodyParser.json());
 mongoose.Promise = global.Promise;
 
 
-passport('basic', {session: false})
+// passport('basic', {session: false})
 
-passport.use(passport());
+// passport.use(passport());
 
-const basicStrategy = new BasicStrategy(function(username, password, done) {
+// const basicStrategy = new BasicStrategy(function(username, password, done) {
 
-  User
-    .find({username})
-    .then(function() {
+//   User
+//     .find({username})
+//     .then(function() {
 
-    })
+//     })
 
-});
+// });
 
-function authenticator() {
-  passport.authenticate(password, this.password);
-}
+// function authenticator() {
+//   passport.authenticate(password, this.password);
+// }
 
 
 // ---------
@@ -85,7 +85,6 @@ app.post('/posts', (req, res) => {
       console.error(err);
       res.status(500).json({error: 'Something went wrong'});
     });
-
 });
 
 app.post('/users', (req, res) => {
@@ -112,8 +111,8 @@ app.post('/users', (req, res) => {
       return res.status(201).send(user.apiRepr());
     })
     .catch(err => {
-      res.status(500).json({message: "Error!"});
-    })
+      res.status(500).json({message: 'Error!'});
+    });
 });
 
 app.delete('/posts/:id', (req, res) => {
