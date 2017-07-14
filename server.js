@@ -53,8 +53,7 @@ app.get('/posts', (req, res) => {
     .find()
     .exec()
     .then(posts => {
-      // res.json(posts.map(post => post.apiRepr()));
-      res.json(posts);
+      res.json(posts.map(post => post.apiRepr()));
     })
     .catch(err => {
       console.error(err);
@@ -113,7 +112,7 @@ app.post('/users', (req, res) => {
       return User.hashPassword(req.body.password);   // where does this stuff save?
     })
     .then(password => {
-      return User 
+      return User
         .create({
           username: req.body.username,
           password: password,
