@@ -89,7 +89,10 @@ app.post('/posts', authenticator, (req, res) => {
     .create({
       title: req.body.title,
       content: req.body.content,
-      author: req.user
+      author: {
+        firstName: req.user.firstName,
+        lastName: req.user.lastName
+      }
     })
     .then(blogPost => res.status(201).json(blogPost.apiRepr()))
     .catch(err => {
