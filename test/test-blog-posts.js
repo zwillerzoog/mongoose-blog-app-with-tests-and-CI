@@ -51,14 +51,17 @@ function seedUserData() {
 }
 
 
-describe('blog posts API resource', function() {
+describe.only('blog posts API resource', function() {
   before(function() {
     return runServer(TEST_DATABASE_URL);
   });
 
   beforeEach(function() {
-    const databaseQueries = [seedBlogPostData(), seedUserData()];
-    Promise.all(databaseQueries);
+    return seedBlogPostData();
+  });
+
+  beforeEach(function() {
+    return seedUserData();
   });
 
   afterEach(function() {
@@ -99,7 +102,7 @@ describe('blog posts API resource', function() {
 
           res.body.forEach(function(post) {
             post.should.be.a('object');
-            post.should.include.keys('id', 'title', 'content', 'author', 'created');
+            post.should.include.keys('id', 'title', 'content', 'author');
           });
           resPost = res.body[0];
           return BlogPost.findById(resPost.id).exec();
@@ -202,7 +205,9 @@ describe('blog posts API resource', function() {
         .exec()
         .then(_post => {
           post = _post;
-          return chai.request(app).delete(`/posts/${post.id}`);
+          return chai.request(app)
+            .delete(`/posts/${post.id}`)
+            .auth(USER.username, USER.unhashedPassword);
         })
         .then(res => {
           res.should.have.status(204);
